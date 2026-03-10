@@ -7,6 +7,9 @@ sudo apt upgrade
 3. Подключаемся через ssh
 ssh@<login>
 
+Если при ssh подключении возникают ошибки и ругается на ключ:
+ssh-keygen -R 192.168.0.174
+
 4. Зайти в гастройки сети:
 sudo nano /etc/netplan/50-cloud-init.yaml 
 
