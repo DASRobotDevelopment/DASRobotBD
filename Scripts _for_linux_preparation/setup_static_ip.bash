@@ -1,15 +1,14 @@
 #!/bin/bash
 set -e
 
-# Цвета ИСПРАВЛЕНЫ ✅
+# Цвета и функции
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-
 log() { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
-# ПРОВЕРКА прав ✅
-[[ $EUID -eq 0 ]] && error "НЕ запускайте от sudo! Используйте: ./setup_wifi.sh"
+# Проверка прав
+[[ $EUID -eq 0 ]] && error "НЕ запускайте от sudo!"
 
 usage() {
     cat << EOF
@@ -45,7 +44,7 @@ done
 [[ -z "$SSID" ]] && error "Укажите SSID: -s MyWiFi"
 [[ -z "$PASSWORD" ]] && error "Укажите пароль: -p MyPass"
 
-log "🌐 Настройка WiFi: $SSID → $IP/$GATEWAY"
+log "ℹ  Настройка WiFi: $SSID → $IP/$GATEWAY"
 
 # 1. Создание/редактирование netplan конфига
 CONFIG_FILE="/etc/netplan/50-cloud-init.yaml"
@@ -54,30 +53,30 @@ sudo cp "$CONFIG_FILE" "${CONFIG_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
 sudo tee "$CONFIG_FILE" > /dev/null << EOF
 network:
   version: 2
+  renderer: networkd
   wifis:
     wlan0:
       dhcp4: false
       dhcp6: false
-      addresses:
-        - [$IP/24]
+      accept-ra: false
+      optional: true
+      addresses: ["$IP/24"]  # ← ИСПРАВЛЕНО
       routes:
         - to: default
-          via: $GATEWAY
+          via: "$GATEWAY"
           metric: 100
       nameservers:
-        addresses:
-          - 8.8.8.8
-          - 8.8.4.4
+        addresses: ["8.8.8.8", "8.8.4.4"]
       access-points:
         "$SSID":
           password: "$PASSWORD"
 EOF
 
 # 2. Проверка синтаксиса + применение
-log "🔍 Проверка конфигурации..."
+log "ℹ  Проверка конфигурации..."
 sudo netplan generate || error "Ошибка в netplan конфиге!"
 
-log "✅ Применение настроек (переподключение WiFi)..."
+log "ℹ  Применение настроек (переподключение WiFi)..."
 sudo netplan apply
 
 # 3. Проверка результата
@@ -85,7 +84,7 @@ sleep 5
 CURRENT_IP=$(ip addr show wlan0 | grep "inet " | awk '{print $2}' | cut -d'/' -f1)
 
 if [[ "$CURRENT_IP" == "$IP" ]]; then
-    log "✅ WiFi настроен: $IP ($SSID)"
+    log "✔️ WiFi настроен: $IP ($SSID)"
     echo -e "${GREEN}🌐 Сеть:${NC} $SSID | IP: $CURRENT_IP | Gateway: $GATEWAY"
 else
     warn "⚠️  IP не совпадает: ожидался $IP, получен $CURRENT_IP"
