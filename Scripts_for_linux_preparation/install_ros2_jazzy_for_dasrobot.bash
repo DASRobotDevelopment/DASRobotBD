@@ -82,7 +82,6 @@ MISSING=0
 
 for pkg in "${PACKAGES[@]}"; do
     if dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
-        echo "✔️ $pkg - установлен"
         ((INSTALLED++))
     else
         echo "❌ $pkg - отсутствует"
