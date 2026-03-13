@@ -7,6 +7,12 @@ log() { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
+# Подготовка к установке
+log "ℹ  Настройка сети"
+echo 'Acquire::ForceIPv4 "true";' | sudo tee /etc/apt/apt.conf.d/99force-ipv4
+sudo rm -rf /var/lib/apt/lists/*
+sudo apt clean
+
 # Установка основных пакетов
 log "ℹ  Установка ROS2 Jazzy"
 
