@@ -21,7 +21,7 @@ usage() {
   -p, --password PASSWD Пароль WiFi
 
 Пример:
-  $0 -i 192.168.1.100 -g 192.168.1.1 -s MyWiFi -p MySecretPass123
+  $0 -i 192.168.0.100 -g 192.168.0.1 -s MyWiFi -p MySecretPass123
 EOF
     exit 1
 }
@@ -60,7 +60,7 @@ network:
       dhcp6: false
       accept-ra: false
       optional: true
-      addresses: ["$IP/24"]  # ← ИСПРАВЛЕНО
+      addresses: ["$IP/24"]
       routes:
         - to: default
           via: "$GATEWAY"
