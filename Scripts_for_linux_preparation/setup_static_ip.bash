@@ -92,3 +92,5 @@ fi
 
 log "📋 Конфиг сохранен: $CONFIG_FILE"
 log "💾 Бэкап: ${CONFIG_FILE}.backup.*"
+
+sudo reboot now
