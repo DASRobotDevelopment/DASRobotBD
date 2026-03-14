@@ -32,6 +32,7 @@ sudo apt update && sudo apt install ros-dev-tools
 sudo apt update
 sudo apt upgrade
 sudo apt install ros-jazzy-ros-base
+echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 
 # Проверка установки основных пакетов
 if dpkg -l | grep -q ros-jazzy-ros-base; then
